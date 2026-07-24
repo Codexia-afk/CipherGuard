@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070b12">
+  <title>Password Strength Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="glow glow-1" aria-hidden="true"></div>
+  <div class="glow glow-2" aria-hidden="true"></div>
+
+  <div class="container">
+    <header class="header">
+      <div class="brand-line">
+        <div class="logo-badge">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="eyebrow">Local security utility</span>
+      </div>
+      <h1>Password <span>Strength</span> Analyzer</h1>
+      <p class="subtitle">Test complexity, spot weaknesses, and generate a stronger credential in seconds.</p>
+      <div class="privacy-note"><span></span> Your password never leaves this device</div>
+    </header>
+
+    <main class="main-grid">
+      <section class="card input-card">
+        <div class="section-heading">
+          <div>
+            <span class="step">01 / Analyze</span>
+            <h2>Test your password</h2>
+          </div>
+          <span class="status-dot" aria-hidden="true"></span>
+        </div>
+
+        <label class="field-label" for="passwordInput">Password</label>
+        <div class="input-wrapper">
+          <input type="password" id="passwordInput" placeholder="Enter a password to inspect" autocomplete="new-password" spellcheck="false" aria-describedby="privacyText">
+          <button class="icon-btn" id="toggleVisibility" title="Show password" aria-label="Show password" type="button">
+            <svg id="eyeIcon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <p class="input-hint" id="privacyText">Analysis happens entirely in your browser.</p>
+
+        <div class="meter-section">
+          <div class="meter-top">
+            <span class="meter-label">Current strength</span>
+            <span class="meter-value" id="strengthText">Waiting</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-label="Password strength" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="generateBtn" type="button">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+            Generate strong password
+          </button>
+          <button class="btn btn-secondary" id="copyBtn" type="button">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+          <button class="btn btn-ghost" id="resetBtn" type="button">Clear</button>
+        </div>
+        <p class="copy-toast" id="copyToast" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="card score-card">
+        <span class="step">02 / Result</span>
+        <h2 class="card-title">Security score</h2>
+        <div class="score-ring-wrap">
+          <svg class="score-ring" viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="ring-bg" cx="70" cy="70" r="60"></circle>
+            <circle class="ring-progress" id="ringProgress" cx="70" cy="70" r="60"></circle>
+          </svg>
+          <div class="score-center">
+            <span class="score-number" id="scoreNumber">0</span>
+            <span class="score-max">/100</span>
+          </div>
+        </div>
+        <div class="rating-badge" id="ratingBadge">Not analyzed</div>
+        <div class="crack-time-box">
+          <span class="crack-label">Estimated brute-force time</span>
+          <span class="crack-value" id="crackTime">—</span>
+        </div>
+      </section>
+
+      <section class="card rules-card">
+        <div class="section-heading compact">
+          <div>
+            <span class="step">03 / Requirements</span>
+            <h2 class="card-title">Security checks</h2>
+          </div>
+          <span class="checks-count" id="checksCount">1/6</span>
+        </div>
+        <ul class="rules-list" id="rulesList">
+          <li class="rule-item" data-rule="length"><span class="rule-icon">×</span><span class="rule-text">At least 12 characters</span></li>
+          <li class="rule-item" data-rule="uppercase"><span class="rule-icon">×</span><span class="rule-text">Uppercase letter</span></li>
+          <li class="rule-item" data-rule="lowercase"><span class="rule-icon">×</span><span class="rule-text">Lowercase letter</span></li>
+          <li class="rule-item" data-rule="number"><span class="rule-icon">×</span><span class="rule-text">Number</span></li>
+          <li class="rule-item" data-rule="special"><span class="rule-icon">×</span><span class="rule-text">Special character</span></li>
+          <li class="rule-item pass" data-rule="space"><span class="rule-icon">✓</span><span class="rule-text">No spaces</span></li>
+        </ul>
+      </section>
+
+      <section class="card suggestions-card" id="suggestionsCard">
+        <span class="step">04 / Improve</span>
+        <h2 class="card-title">Next best actions</h2>
+        <ul class="suggestions-list" id="suggestionsList">
+          <li>Enter a password to receive focused recommendations.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p><strong>SECURE/LOCAL</strong> No password data is stored, transmitted, or logged.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
