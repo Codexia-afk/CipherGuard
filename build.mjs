@@ -9,10 +9,12 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(server, { recursive: true });
 await mkdir(hosting, { recursive: true });
 
-const [html, css, javascript, hostingConfig] = await Promise.all([
+const [html, css, javascript, logo, favicon, hostingConfig] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
   readFile(new URL("style.css", root), "utf8"),
   readFile(new URL("script.js", root), "utf8"),
+  readFile(new URL("assets/cipherguard-logo.webp", root)),
+  readFile(new URL("assets/favicon.png", root)),
   readFile(new URL(".openai/hosting.json", root), "utf8")
 ]);
 
@@ -21,7 +23,9 @@ const assets = {
   "/": { type: "text/html; charset=utf-8", body: ${JSON.stringify(html)} },
   "/index.html": { type: "text/html; charset=utf-8", body: ${JSON.stringify(html)} },
   "/style.css": { type: "text/css; charset=utf-8", body: ${JSON.stringify(css)} },
-  "/script.js": { type: "text/javascript; charset=utf-8", body: ${JSON.stringify(javascript)} }
+  "/script.js": { type: "text/javascript; charset=utf-8", body: ${JSON.stringify(javascript)} },
+  "/assets/cipherguard-logo.webp": { type: "image/webp", base64: ${JSON.stringify(logo.toString("base64"))} },
+  "/assets/favicon.png": { type: "image/png", base64: ${JSON.stringify(favicon.toString("base64"))} }
 };
 
 export default {
@@ -31,7 +35,10 @@ export default {
     if (!asset) {
       return new Response("Not found", { status: 404 });
     }
-    return new Response(request.method === "HEAD" ? null : asset.body, {
+    const body = asset.base64
+      ? Uint8Array.from(atob(asset.base64), character => character.charCodeAt(0))
+      : asset.body;
+    return new Response(request.method === "HEAD" ? null : body, {
       headers: {
         "content-type": asset.type,
         "cache-control": asset.type.startsWith("text/html") ? "no-cache" : "public, max-age=3600",
