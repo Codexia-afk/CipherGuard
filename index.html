@@ -2,133 +2,175 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#070b12">
-  <title>Password Strength Analyzer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#030806">
+  <meta name="description" content="A privacy-first, client-side password security analysis and generation lab.">
+  <title>CipherGuard // Password Security Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="bg-grid" aria-hidden="true"></div>
-  <div class="glow glow-1" aria-hidden="true"></div>
-  <div class="glow glow-2" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="scanline" aria-hidden="true"></div>
 
-  <div class="container">
-    <header class="header">
-      <div class="brand-line">
-        <div class="logo-badge">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M9 12l2 2 4-4"/>
-          </svg>
-        </div>
-        <span class="eyebrow">Local security utility</span>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="CipherGuard home">
+      <span class="brand-mark">CG</span>
+      <span><strong>CIPHERGUARD</strong><small>SECURITY LAB</small></span>
+    </a>
+    <div class="system-status"><span></span> LOCAL ENGINE ONLINE</div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="kicker">PASSWORD INTELLIGENCE // BUILD 01</p>
+        <h1>Audit the password.<br><em>Understand the risk.</em></h1>
+        <p class="hero-copy">A privacy-first security tool that models password entropy, attack resistance, policy compliance, and predictable human patterns—without transmitting a single character.</p>
       </div>
-      <h1>Password <span>Strength</span> Analyzer</h1>
-      <p class="subtitle">Test complexity, spot weaknesses, and generate a stronger credential in seconds.</p>
-      <div class="privacy-note"><span></span> Your password never leaves this device</div>
-    </header>
+      <div class="privacy-seal">
+        <span class="seal-icon">◈</span>
+        <div><strong>ZERO DATA EGRESS</strong><small>100% client-side analysis</small></div>
+      </div>
+    </section>
 
-    <main class="main-grid">
-      <section class="card input-card">
-        <div class="section-heading">
-          <div>
-            <span class="step">01 / Analyze</span>
-            <h2>Test your password</h2>
+    <nav class="lab-tabs" aria-label="Security lab tools">
+      <button class="tab active" data-tab="analyzer" type="button"><span>01</span> Password audit</button>
+      <button class="tab" data-tab="generator" type="button"><span>02</span> Secure generator</button>
+      <button class="tab" data-tab="methodology" type="button"><span>03</span> Methodology</button>
+    </nav>
+
+    <section class="tab-panel active" id="analyzerPanel">
+      <div class="dashboard-grid">
+        <article class="panel analyzer-panel">
+          <div class="panel-head">
+            <div><p class="micro">LIVE INPUT</p><h2>Credential under test</h2></div>
+            <span class="live-pill"><i></i> analyzing locally</span>
           </div>
-          <span class="status-dot" aria-hidden="true"></span>
-        </div>
 
-        <label class="field-label" for="passwordInput">Password</label>
-        <div class="input-wrapper">
-          <input type="password" id="passwordInput" placeholder="Enter a password to inspect" autocomplete="new-password" spellcheck="false" aria-describedby="privacyText">
-          <button class="icon-btn" id="toggleVisibility" title="Show password" aria-label="Show password" type="button">
-            <svg id="eyeIcon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-        <p class="input-hint" id="privacyText">Analysis happens entirely in your browser.</p>
-
-        <div class="meter-section">
-          <div class="meter-top">
-            <span class="meter-label">Current strength</span>
-            <span class="meter-value" id="strengthText">Waiting</span>
+          <label for="passwordInput">Enter a test password</label>
+          <div class="password-field">
+            <input id="passwordInput" type="password" autocomplete="new-password" spellcheck="false" placeholder="Type or paste a password…" aria-describedby="privacyHint">
+            <button id="toggleVisibility" class="field-action" type="button" aria-label="Show password">SHOW</button>
           </div>
-          <div class="progress-track" role="progressbar" aria-label="Password strength" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div class="progress-fill" id="progressFill"></div>
+          <p class="field-hint" id="privacyHint">Tip: use a sample password rather than a credential you actively use.</p>
+
+          <div class="controls-row">
+            <label class="select-wrap">ATTACK MODEL
+              <select id="attackModel">
+                <option value="online">Online throttled · 100/sec</option>
+                <option value="offline" selected>Offline fast hash · 10B/sec</option>
+                <option value="gpu">GPU cluster · 1T/sec</option>
+              </select>
+            </label>
+            <label class="select-wrap">POLICY PROFILE
+              <select id="policyProfile">
+                <option value="standard">Modern standard</option>
+                <option value="enterprise">Enterprise strict</option>
+                <option value="nist">NIST-inspired</option>
+              </select>
+            </label>
           </div>
-        </div>
 
-        <div class="btn-row">
-          <button class="btn btn-primary" id="generateBtn" type="button">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
-            Generate strong password
-          </button>
-          <button class="btn btn-secondary" id="copyBtn" type="button">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copy
-          </button>
-          <button class="btn btn-ghost" id="resetBtn" type="button">Clear</button>
-        </div>
-        <p class="copy-toast" id="copyToast" role="status" aria-live="polite"></p>
-      </section>
-
-      <section class="card score-card">
-        <span class="step">02 / Result</span>
-        <h2 class="card-title">Security score</h2>
-        <div class="score-ring-wrap">
-          <svg class="score-ring" viewBox="0 0 140 140" aria-hidden="true">
-            <circle class="ring-bg" cx="70" cy="70" r="60"></circle>
-            <circle class="ring-progress" id="ringProgress" cx="70" cy="70" r="60"></circle>
-          </svg>
-          <div class="score-center">
-            <span class="score-number" id="scoreNumber">0</span>
-            <span class="score-max">/100</span>
+          <div class="strength-block">
+            <div class="strength-meta"><span>COMPOSITE STRENGTH</span><strong id="strengthText">AWAITING INPUT</strong></div>
+            <div class="segments" id="segments" aria-label="Password strength" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
           </div>
-        </div>
-        <div class="rating-badge" id="ratingBadge">Not analyzed</div>
-        <div class="crack-time-box">
-          <span class="crack-label">Estimated brute-force time</span>
-          <span class="crack-value" id="crackTime">—</span>
-        </div>
-      </section>
 
-      <section class="card rules-card">
-        <div class="section-heading compact">
-          <div>
-            <span class="step">03 / Requirements</span>
-            <h2 class="card-title">Security checks</h2>
+          <div class="action-row">
+            <button class="button primary" id="analyzeBtn" type="button">RUN SECURITY AUDIT <span>→</span></button>
+            <button class="button secondary" id="useGeneratedBtn" type="button">GENERATE INSTEAD</button>
+            <button class="button ghost" id="clearBtn" type="button">CLEAR</button>
           </div>
-          <span class="checks-count" id="checksCount">1/6</span>
-        </div>
-        <ul class="rules-list" id="rulesList">
-          <li class="rule-item" data-rule="length"><span class="rule-icon">×</span><span class="rule-text">At least 12 characters</span></li>
-          <li class="rule-item" data-rule="uppercase"><span class="rule-icon">×</span><span class="rule-text">Uppercase letter</span></li>
-          <li class="rule-item" data-rule="lowercase"><span class="rule-icon">×</span><span class="rule-text">Lowercase letter</span></li>
-          <li class="rule-item" data-rule="number"><span class="rule-icon">×</span><span class="rule-text">Number</span></li>
-          <li class="rule-item" data-rule="special"><span class="rule-icon">×</span><span class="rule-text">Special character</span></li>
-          <li class="rule-item pass" data-rule="space"><span class="rule-icon">✓</span><span class="rule-text">No spaces</span></li>
-        </ul>
-      </section>
+          <p class="toast" id="toast" role="status" aria-live="polite"></p>
+        </article>
 
-      <section class="card suggestions-card" id="suggestionsCard">
-        <span class="step">04 / Improve</span>
-        <h2 class="card-title">Next best actions</h2>
-        <ul class="suggestions-list" id="suggestionsList">
-          <li>Enter a password to receive focused recommendations.</li>
-        </ul>
-      </section>
-    </main>
+        <aside class="panel score-panel">
+          <div class="panel-head"><div><p class="micro">RISK INDEX</p><h2>Security score</h2></div><span class="score-grade" id="scoreGrade">—</span></div>
+          <div class="score-display">
+            <div class="score-orbit"><span id="scoreNumber">0</span><small>/100</small></div>
+            <div><strong id="riskLabel">NOT ANALYZED</strong><p id="riskSummary">Enter a password to begin the audit.</p></div>
+          </div>
+          <div class="metric-grid">
+            <div><span>ENTROPY</span><strong id="entropyValue">0 bits</strong></div>
+            <div><span>CRACK TIME</span><strong id="crackTime">—</strong></div>
+            <div><span>CHARSET</span><strong id="charsetValue">0</strong></div>
+            <div><span>FINDINGS</span><strong id="findingCount">0</strong></div>
+          </div>
+        </aside>
 
-    <footer class="footer">
-      <p><strong>SECURE/LOCAL</strong> No password data is stored, transmitted, or logged.</p>
+        <article class="panel checks-panel">
+          <div class="panel-head"><div><p class="micro">POLICY AUDIT</p><h2>Compliance checks</h2></div><span id="checksCount">0/8 PASS</span></div>
+          <div class="check-grid" id="rulesList">
+            <div class="check" data-rule="length"><b>×</b><span>Minimum length<small id="lengthRule">12+ characters</small></span></div>
+            <div class="check" data-rule="uppercase"><b>×</b><span>Uppercase<small>At least one A–Z</small></span></div>
+            <div class="check" data-rule="lowercase"><b>×</b><span>Lowercase<small>At least one a–z</small></span></div>
+            <div class="check" data-rule="number"><b>×</b><span>Numeric<small>At least one 0–9</small></span></div>
+            <div class="check" data-rule="special"><b>×</b><span>Symbol<small>Non-alphanumeric</small></span></div>
+            <div class="check" data-rule="unique"><b>×</b><span>Character diversity<small>No heavy repetition</small></span></div>
+            <div class="check" data-rule="common"><b>×</b><span>Common password<small>Not in local watchlist</small></span></div>
+            <div class="check" data-rule="pattern"><b>×</b><span>Predictable pattern<small>No sequences or dates</small></span></div>
+          </div>
+        </article>
+
+        <article class="panel findings-panel">
+          <div class="panel-head"><div><p class="micro">THREAT INTELLIGENCE</p><h2>Findings & remediation</h2></div><span class="severity" id="severityBadge">INFO</span></div>
+          <div class="findings-list" id="findingsList">
+            <div class="empty-state"><span>⌁</span><p>Awaiting credential input.<small>Findings will appear here in real time.</small></p></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="generatorPanel">
+      <div class="generator-grid">
+        <article class="panel">
+          <div class="panel-head"><div><p class="micro">CRYPTOGRAPHIC GENERATOR</p><h2>Build a stronger credential</h2></div><span class="live-pill"><i></i> WEB CRYPTO API</span></div>
+          <div class="generated-output">
+            <input id="generatedPassword" readonly aria-label="Generated password">
+            <button id="copyGeneratedBtn" type="button">COPY</button>
+          </div>
+          <div class="range-head"><label for="lengthRange">PASSWORD LENGTH</label><output id="lengthOutput">20</output></div>
+          <input id="lengthRange" class="range" type="range" min="8" max="64" value="20">
+          <div class="option-grid">
+            <label><input id="includeUpper" type="checkbox" checked><span>Uppercase <small>A–Z</small></span></label>
+            <label><input id="includeLower" type="checkbox" checked><span>Lowercase <small>a–z</small></span></label>
+            <label><input id="includeNumbers" type="checkbox" checked><span>Numbers <small>0–9</small></span></label>
+            <label><input id="includeSymbols" type="checkbox" checked><span>Symbols <small>!@#$</small></span></label>
+            <label><input id="excludeAmbiguous" type="checkbox" checked><span>Exclude ambiguous <small>Il1O0</small></span></label>
+          </div>
+          <button class="button primary full" id="regenerateBtn" type="button">GENERATE SECURE PASSWORD <span>↻</span></button>
+          <p class="toast" id="generatorToast" role="status" aria-live="polite"></p>
+        </article>
+        <aside class="panel generator-stats">
+          <p class="micro">OUTPUT ASSESSMENT</p><h2>Generator telemetry</h2>
+          <div class="big-stat"><span id="generatedEntropy">128</span><small>ESTIMATED BITS</small></div>
+          <div class="telemetry-row"><span>Method</span><strong>Cryptographic random</strong></div>
+          <div class="telemetry-row"><span>Bias reduction</span><strong>Rejection sampling</strong></div>
+          <div class="telemetry-row"><span>Storage</span><strong>None</strong></div>
+          <div class="callout">Generated values exist only in this browser tab. Save them directly to a trusted password manager.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="methodologyPanel">
+      <div class="method-grid">
+        <article class="panel"><span class="method-number">01</span><h2>Composition</h2><p>Measures length, usable character space, and diversity. Entropy is estimated from the theoretical search space, then adjusted for detected human patterns.</p></article>
+        <article class="panel"><span class="method-number">02</span><h2>Pattern analysis</h2><p>Flags common credentials, repeated characters, keyboard walks, simple sequences, years, and low-diversity strings using an entirely local rules engine.</p></article>
+        <article class="panel"><span class="method-number">03</span><h2>Attack simulation</h2><p>Models three guessing speeds to show why the same password behaves differently against a throttled login and an exposed offline hash.</p></article>
+        <article class="panel"><span class="method-number">04</span><h2>Responsible scope</h2><p>This is an educational estimator, not a guarantee. Real outcomes depend on hashing, salting, rate limits, MFA, breach exposure, and attacker strategy.</p></article>
+      </div>
+    </section>
+
+    <footer>
+      <span>CIPHERGUARD / CLIENT-SIDE SECURITY RESEARCH PROJECT</span>
+      <span>NO STORAGE · NO TRACKING · NO NETWORK REQUESTS FOR ANALYSIS</span>
     </footer>
-  </div>
-
+  </main>
   <script src="script.js"></script>
 </body>
 </html>
