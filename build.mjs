@@ -4,10 +4,12 @@ const root = new URL(".", import.meta.url);
 const dist = new URL("dist/", root);
 const server = new URL("dist/server/", root);
 const hosting = new URL("dist/.openai/", root);
+const assetsDirectory = new URL("dist/assets/", root);
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(server, { recursive: true });
 await mkdir(hosting, { recursive: true });
+await mkdir(assetsDirectory, { recursive: true });
 
 const [html, css, javascript, logo, favicon, hostingConfig] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
@@ -53,3 +55,10 @@ export default {
 
 await writeFile(new URL("index.js", server), worker);
 await writeFile(new URL("hosting.json", hosting), hostingConfig);
+await Promise.all([
+  writeFile(new URL("index.html", dist), html),
+  writeFile(new URL("style.css", dist), css),
+  writeFile(new URL("script.js", dist), javascript),
+  writeFile(new URL("cipherguard-logo.webp", assetsDirectory), logo),
+  writeFile(new URL("favicon.png", assetsDirectory), favicon)
+]);
