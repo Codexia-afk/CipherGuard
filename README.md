@@ -1,3 +1,4 @@
+
 # CipherGuard — Password Security Lab
 
 CipherGuard is a privacy-first password auditing and generation tool built to demonstrate how human password choices translate into real security risk. It combines entropy estimation, attack-speed simulation, policy compliance, predictable-pattern detection, and cryptographically secure password generation in a modern cybersecurity dashboard.
